@@ -1,4 +1,4 @@
-import React, { useState, FormEvent } from 'react'
+import React, { useState, FormEvent, useEffect } from 'react'
 import { FiChevronRight } from 'react-icons/fi'
 import api from '../../services/api'
 
@@ -16,9 +16,21 @@ interface RepositoryDTO {
 }
 
 const Dashboard: React.FC = () => {
-  const [repositories, setRepositories] = useState<RepositoryDTO[]>([])
+  const [repositories, setRepositories] = useState<RepositoryDTO[]>(() => {
+    const storedRepositories = localStorage.getItem('@GithubExplorer:repositories')
+
+    if (storedRepositories) {
+      return JSON.parse(storedRepositories)
+    } else {
+      return []
+    }
+  })
   const [repositoryQuery, setRepositoryQuery] = useState('')
   const [inputError, setInputError] = useState('')
+
+  useEffect(() => {
+    localStorage.setItem('@GithubExplorer:repositories', JSON.stringify(repositories))
+  }, [repositories])
 
   async function handleAddRepository(event: FormEvent<HTMLFormElement>): Promise<void> {
     event.preventDefault()
@@ -49,6 +61,7 @@ const Dashboard: React.FC = () => {
           placeholder="Digite o nome do repositório"
           value={repositoryQuery}
           onChange={e => setRepositoryQuery(e.target.value)}
+          autoFocus
         />
         <button type="submit">Pesquisar</button>
       </Form>
