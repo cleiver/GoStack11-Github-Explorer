@@ -4,7 +4,7 @@ import api from '../../services/api'
 
 import logo from '../../assets/logo.svg'
 
-import { Title, Form, Repositories } from './styles'
+import { Title, Form, Repositories, Error } from './styles'
 
 interface RepositoryDTO {
   full_name: string
@@ -17,16 +17,26 @@ interface RepositoryDTO {
 
 const Dashboard: React.FC = () => {
   const [repositories, setRepositories] = useState<RepositoryDTO[]>([])
-
   const [repositoryQuery, setRepositoryQuery] = useState('')
+  const [inputError, setInputError] = useState('')
 
   async function handleAddRepository(event: FormEvent<HTMLFormElement>): Promise<void> {
     event.preventDefault()
 
-    const response = await api.get<RepositoryDTO>(`repos/${repositoryQuery}`)
+    if (!repositoryQuery) {
+      setInputError('Informe dono/nome do repositório')
+      return
+    }
 
-    setRepositories([...repositories, response.data])
-    setRepositoryQuery('')
+    try {
+      const response = await api.get<RepositoryDTO>(`repos/${repositoryQuery}`)
+
+      setRepositories([...repositories, response.data])
+      setRepositoryQuery('')
+      setInputError('')
+    } catch (error) {
+      setInputError('Erro ao buscar repositório')
+    }
   }
 
   return (
@@ -34,7 +44,7 @@ const Dashboard: React.FC = () => {
       <img src={logo} alt="Github Explorer" />
       <Title>Explore repositórios no Github</Title>
 
-      <Form onSubmit={handleAddRepository}>
+      <Form onSubmit={handleAddRepository} hasError={!!inputError}>
         <input
           placeholder="Digite o nome do repositório"
           value={repositoryQuery}
@@ -42,6 +52,8 @@ const Dashboard: React.FC = () => {
         />
         <button type="submit">Pesquisar</button>
       </Form>
+
+      {inputError && <Error>{inputError}</Error>}
 
       <Repositories>
         {repositories.map(repository => (
