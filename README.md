@@ -2,13 +2,19 @@
 
 # Github Explorer
 
-Simple react projet to save a list of Github repositories and list their open issues.
+Simple ReactJS project to locally save a list of Github repositories and show some stats.
 
 ![Main screen](screenshot_01.png "Main screen")
 
 ![Details page](screenshot_02.png "Details page")
 
-## Installing
+## 📋 Probable Roadmap
+- search by user
+- search by repo without the need of the username
+- save the list somewhere
+
+
+## 💻 Local install
 1. Clone the application
 
 ```
